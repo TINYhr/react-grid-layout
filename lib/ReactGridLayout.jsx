@@ -80,13 +80,16 @@ export type Props = {
   onResize: EventCallback,
   onResizeStart: EventCallback,
   onResizeStop: EventCallback,
-  onDrop: (itemPosition: {
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    e: Event
-  }) => void,
+  onDrop: (
+    layout: Layout,
+    item: {
+      x: number,
+      y: number,
+      w: number,
+      h: number,
+      data: Object
+    }
+  ) => void,
   children: ReactChildrenArray<ReactElement<any>>
 };
 // End Types
@@ -792,17 +795,18 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     this.dragEnterCounter++;
   };
 
-  onDrop = (e: Event) => {
+  onDrop = (e: any) => {
     const { droppingItem } = this.props;
     const { layout } = this.state;
     const { x, y, w, h } = layout.find(l => l.i === droppingItem.i) || {};
+    const item = { x, y, w, h, data: e.dataTransfer };
 
     // reset gragEnter counter on drop
     this.dragEnterCounter = 0;
 
     this.removeDroppingPlaceholder();
 
-    this.props.onDrop({ x, y, w, h, e });
+    this.props.onDrop(layout, item);
   };
 
   render() {
